@@ -1,6 +1,9 @@
+// ---- State ----
 let currentIndex = 0;
-const answers = {};
+const answers = {}; // question id -> value (-3..3)
 
+// ---- Elements ----
+const introScreen = document.getElementById('intro');
 const quizScreen = document.getElementById('quiz');
 const resultScreen = document.getElementById('result');
 
@@ -15,11 +18,13 @@ const progressFill = document.getElementById('progressFill');
 
 const SCALE_VALUES = [-3, -2, -1, 0, 1, 2, 3];
 
+// ---- Screen switching ----
 function showScreen(el) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
 }
 
+// ---- Render a question ----
 function renderQuestion() {
   const q = QUESTIONS[currentIndex];
   qCounter.textContent = `Question ${currentIndex + 1} of ${QUESTIONS.length}`;
@@ -41,6 +46,7 @@ function renderQuestion() {
 
 function selectAnswer(qid, val) {
   answers[qid] = val;
+  // small delay so the user sees the selection highlight before advancing
   renderQuestion();
   setTimeout(() => {
     if (currentIndex < QUESTIONS.length - 1) {
@@ -72,6 +78,7 @@ retakeBtn.addEventListener('click', () => {
   renderQuestion();
 });
 
+// ---- Scoring using the trained logistic regression weights ----
 function sigmoid(x) {
   return 1 / (1 + Math.exp(-x));
 }
@@ -83,7 +90,7 @@ function scoreAxis(axisKey) {
     const val = answers[qid] ?? 0;
     z += model.coefficients[i] * val;
   });
-  const prob = sigmoid(z);
+  const prob = sigmoid(z); // probability of the "positive_letter" class
   return { prob, letter: prob >= 0.5 ? model.positive_letter : model.negative_letter };
 }
 
@@ -97,6 +104,7 @@ function showResults() {
     typeCode += letter;
     const model = MODEL_WEIGHTS[axis];
     axisResults.push({
+      axis,
       letter,
       prob,
       positive_letter: model.positive_letter,
@@ -113,13 +121,13 @@ function showResults() {
   axisBarsEl.innerHTML = '';
   axisResults.forEach(r => {
     const pct = Math.round(r.prob * 100);
-    const fillPct = r.letter === r.positive_letter ? pct : 100 - pct;
+    const displayPct = r.letter === r.positive_letter ? pct : 100 - pct;
     const row = document.createElement('div');
     row.className = 'axis-row';
     row.innerHTML = `
       <span class="axis-letter-left">${r.negative_letter}</span>
       <div class="axis-track">
-        <div class="axis-fill" style="width:${fillPct}%; ${r.letter === r.positive_letter ? '' : 'margin-left:auto;'}"></div>
+        <div class="axis-fill" style="width:${r.letter === r.positive_letter ? pct : 100 - pct}%; ${r.letter === r.positive_letter ? '' : 'margin-left:auto;'}"></div>
       </div>
       <span class="axis-letter-right">${r.positive_letter}</span>
     `;
@@ -127,4 +135,47 @@ function showResults() {
   });
 
   showScreen(resultScreen);
+  setupShare(typeCode, info.name);
+}
+
+const SITE_URL = window.location.href.split('?')[0].split('#')[0];
+
+function buildShareText(typeCode, typeName) {
+  return `I got ${typeCode} (${typeName}) on MindPrint, an ML-powered personality quiz. Try it yourself:`;
+}
+
+function setupShare(typeCode, typeName) {
+  const shareBtn = document.getElementById('shareBtn');
+  const shareFallback = document.getElementById('shareFallback');
+  const shareWhatsapp = document.getElementById('shareWhatsapp');
+  const shareTwitter = document.getElementById('shareTwitter');
+  const shareCopy = document.getElementById('shareCopy');
+  const copyConfirm = document.getElementById('copyConfirm');
+
+  const text = buildShareText(typeCode, typeName);
+
+  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(text + ' ' + SITE_URL)}`;
+  shareTwitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(SITE_URL)}`;
+
+  shareBtn.onclick = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: 'MindPrint', text, url: SITE_URL });
+        return;
+      } catch (err) {
+        // user cancelled or share failed, fall through to showing fallback links
+      }
+    }
+    shareFallback.classList.toggle('visible');
+  };
+
+  shareCopy.onclick = async () => {
+    try {
+      await navigator.clipboard.writeText(`${text} ${SITE_URL}`);
+      copyConfirm.textContent = 'Copied to clipboard';
+      setTimeout(() => { copyConfirm.textContent = ''; }, 2000);
+    } catch (err) {
+      copyConfirm.textContent = 'Could not copy — select and copy manually';
+    }
+  };
 }
