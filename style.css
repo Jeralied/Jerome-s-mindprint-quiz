@@ -1,0 +1,250 @@
+:root {
+  --bg: #201827;
+  --bg-soft: #2b2233;
+  --ink: #f3ece0;
+  --ink-dim: #b8aec0;
+  --gold: #d4a24c;
+  --sage: #7fa088;
+  --line: rgba(243, 236, 224, 0.14);
+  --radius: 4px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+h1, h2 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  margin: 0;
+}
+
+.app {
+  width: 100%;
+  max-width: 560px;
+}
+
+.screen {
+  display: none;
+}
+.screen.active {
+  display: block;
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+#intro {
+  text-align: center;
+}
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.72rem;
+  color: var(--gold);
+  margin: 0 0 14px;
+  font-weight: 500;
+}
+#intro h1 {
+  font-size: 3rem;
+  letter-spacing: -0.01em;
+  margin-bottom: 18px;
+}
+.lede {
+  color: var(--ink-dim);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: 420px;
+  margin: 0 auto 32px;
+}
+.btn-primary {
+  background: var(--gold);
+  color: #201827;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: 14px 32px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+.btn-primary:hover {
+  background: #e0b466;
+  transform: translateY(-1px);
+}
+.disclaimer {
+  margin-top: 28px;
+  font-size: 0.8rem;
+  color: var(--ink-dim);
+  line-height: 1.6;
+  max-width: 420px;
+  margin-left: auto;
+  margin-right: auto;
+  opacity: 0.85;
+}
+
+.progress-track {
+  height: 3px;
+  background: var(--line);
+  border-radius: 3px;
+  margin-bottom: 28px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--sage);
+  transition: width 0.3s ease;
+}
+.q-counter {
+  color: var(--gold);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin: 0 0 16px;
+}
+.q-text {
+  font-size: 1.6rem;
+  line-height: 1.35;
+  margin-bottom: 40px;
+  min-height: 90px;
+}
+
+.scale {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 36px;
+}
+.scale-label {
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+  white-space: nowrap;
+}
+.scale-buttons {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 6px;
+}
+.scale-btn {
+  flex: 1;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  border: 1.5px solid var(--line);
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  position: relative;
+}
+.scale-btn:nth-child(4) {
+  border-color: var(--ink-dim);
+}
+.scale-btn:hover {
+  border-color: var(--gold);
+  transform: scale(1.08);
+}
+.scale-btn.selected {
+  background: var(--gold);
+  border-color: var(--gold);
+}
+
+.nav-row {
+  display: flex;
+  justify-content: flex-start;
+}
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-dim);
+  border: 1px solid var(--line);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-ghost:hover:not(:disabled) {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.btn-ghost:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+#result {
+  text-align: center;
+}
+.type-code {
+  font-size: 4.5rem;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  margin-bottom: 6px;
+}
+.type-name {
+  font-size: 1.4rem;
+  color: var(--ink);
+  margin-bottom: 16px;
+}
+.type-desc {
+  color: var(--ink-dim);
+  max-width: 420px;
+  margin: 0 auto 36px;
+  line-height: 1.6;
+}
+
+.axis-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-bottom: 36px;
+  text-align: left;
+}
+.axis-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.axis-letter-left, .axis-letter-right {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  font-size: 1rem;
+  width: 20px;
+  text-align: center;
+  color: var(--ink-dim);
+}
+.axis-track {
+  flex: 1;
+  height: 8px;
+  background: var(--bg-soft);
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  border: 1px solid var(--line);
+}
+.axis-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--sage), var(--gold));
+  border-radius: 4px;
+}
+
+@media (max-width: 420px) {
+  #intro h1 { font-size: 2.3rem; }
+  .type-code { font-size: 3.4rem; }
+  .q-text { font-size: 1.3rem; }
+}
