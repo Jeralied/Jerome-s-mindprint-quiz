@@ -9,20 +9,17 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
   <div class="app">
-
     <!-- INTRO SCREEN -->
     <section id="intro" class="screen active">
-      <p class="eyebrow">A personality quiz by Jerome</p>
-      <h1>Jerome's MindPrint Questionaire</h1>
-      <p class="lede">Discover how YOU think with 32 questions,works out your four-letter type.</p>
+      <p class="eyebrow">Jerome's MindPrint — A Personality Insight Quiz</p>
+      <h1>Jerome's MindPrint</h1>
+     <p class="lede">Discover how YOU think — 32 quick questions, and a model works out your four-letter type.</p>
       <button id="startBtn" class="btn-primary">START QUIZ</button>
       <p class="disclaimer">Jerome's Mindprint Quiz is for self-reflection and entertainment only. 
   It is not a psychological diagnosis or professional assessment. Results are based on your answers and 
-  should not be used for hiring, medical, or educational decisions.</p>
+  should not be used for hiring, medical, or educational decisions</p>
     </section>
-
     <!-- QUIZ SCREEN -->
     <section id="quiz" class="screen">
       <div class="progress-track">
@@ -30,32 +27,35 @@
       </div>
       <p id="qCounter" class="q-counter">Question 1 of 32</p>
       <h2 id="qText" class="q-text"></h2>
-
       <div class="scale">
         <span class="scale-label">Disagree</span>
-        <div id="scaleButtons" class="scale-buttons"></dv>
+        <div id="scaleButtons" class="scale-buttons"></div>
         <span class="scale-label">Agree</span>
       </div>
-
       <div class="nav-row">
         <button id="backBtn" class="btn-ghost" disabled>Back</button>
       </div>
     </section>
-
     <!-- RESULT SCREEN -->
     <section id="result" class="screen">
       <p class="eyebrow">Your estimated type</p>
       <h1 id="typeCode" class="type-code">----</h1>
       <h2 id="typeName" class="type-name"></h2>
       <p id="typeDesc" class="type-desc"></p>
-
       <div id="axisBars" class="axis-bars"></div>
-
-      <button id="retakeBtn" class="btn-primary">Let's go again</button>
+      <div class="share-row">
+        <button id="shareBtn" class="btn-share" aria-label="Share your result">Share your result</button>
+        <div id="shareFallback" class="share-fallback">
+          <a id="shareWhatsapp" class="share-icon" target="_blank" rel="noopener">WhatsApp</a>
+          <a id="shareTwitter" class="share-icon" target="_blank" rel="noopener">X</a>
+          <button id="shareCopy" class="share-icon">Copy</button>
+        </div>
+        <p id="copyConfirm" class="copy-confirm"></p>
+      </div>
+      <button id="retakeBtn" class="btn-primary">Let's go again!</button>
       <p class="disclaimer">A model's estimate, not a diagnosis. Take it lightly.</p>
-   <p class="disclaimer">NOTE THAT : E=Extrovert ,I=Introvert ,S=Sensing ,N=iNtuition ,T=Thinking ,F=Feeling ,J=Judging ,P=Perceiving</p>
+    </section>
   </div>
-
   <script src="weights.js"></script>
   <script src="questions.js"></script>
   <script src="types.js"></script>
