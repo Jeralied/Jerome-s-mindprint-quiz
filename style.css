@@ -47,6 +47,7 @@ h1, h2 {
   to { opacity: 1; transform: translateY(0); }
 }
 
+/* ---- Intro ---- */
 #intro {
   text-align: center;
 }
@@ -97,6 +98,7 @@ h1, h2 {
   opacity: 0.85;
 }
 
+/* ---- Quiz ---- */
 .progress-track {
   height: 3px;
   background: var(--line);
@@ -151,7 +153,7 @@ h1, h2 {
   transition: all 0.15s ease;
   position: relative;
 }
-.scale-btn:nth-child(4) {
+.scale-btn:nth-child(4) { /* neutral middle */
   border-color: var(--ink-dim);
 }
 .scale-btn:hover {
@@ -187,6 +189,7 @@ h1, h2 {
   cursor: default;
 }
 
+/* ---- Result ---- */
 #result {
   text-align: center;
 }
@@ -212,7 +215,7 @@ h1, h2 {
   display: flex;
   flex-direction: column;
   gap: 18px;
-  margin-bottom: 36px;
+  margin-bottom: 28px;
   text-align: left;
 }
 .axis-row {
@@ -247,4 +250,56 @@ h1, h2 {
   #intro h1 { font-size: 2.3rem; }
   .type-code { font-size: 3.4rem; }
   .q-text { font-size: 1.3rem; }
+}
+
+/* ---- Share ---- */
+.share-row {
+  margin-bottom: 24px;
+}
+.btn-share {
+  background: transparent;
+  color: var(--gold);
+  border: 1.5px solid var(--gold);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  padding: 12px 28px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.btn-share:hover {
+  background: var(--gold);
+  color: #201827;
+}
+.share-fallback {
+  display: none;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 14px;
+}
+.share-fallback.visible {
+  display: flex;
+}
+.share-icon {
+  background: var(--bg-soft);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  font-family: 'Inter', sans-serif;
+  font-size: 0.85rem;
+  padding: 9px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.share-icon:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.copy-confirm {
+  font-size: 0.8rem;
+  color: var(--sage);
+  margin-top: 10px;
+  height: 1em;
 }
