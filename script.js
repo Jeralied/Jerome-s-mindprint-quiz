@@ -201,5 +201,16 @@ function setupShare(typeCode, typeName) {
     } catch (err) {
       copyConfirm.textContent = 'Could not copy — select and copy manually';
     }
+      const downloadBtn = document.getElementById('downloadBtn');
+
+downloadBtn.addEventListener('click', () => {
+  const resultCard = document.getElementById('result');
+  html2canvas(resultCard, { backgroundColor: '#0f0f1a' }).then(canvas => {
+    const link = document.createElement('a');
+    link.download = `Jerome-Mindprint-${typeCode}.png`;
+    link.href = canvas.toDataURL();
+    link.click();
+  });
+});
   };
 }
