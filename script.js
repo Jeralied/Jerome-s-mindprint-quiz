@@ -157,7 +157,7 @@ const SITE_URL = window.location.href.split('?')[0].split('#')[0];
 
 function buildShareText(typeCode, typeName) {
   const name = typeNames[typeCode] || '';
-  return `I got ${typeCode} - ${name} on Jerome's Mindprint Quiz! 🧠✨ Try it yourself:`;
+  return `I got ${typeCode} - ${name} on Jerome's Mindprint Quiz!  Try it yourself:`;
 }
 
 function setupShare(typeCode, typeName) {
