@@ -146,13 +146,13 @@ function showResults() {
     const displayPct = r.letter === r.positive_letter? pct : 100 - pct;
     const row = document.createElement('div');
     row.className = 'axis-row';
-    row.innerHTML = `
-      <span class="axis-letter-left">${r.negative_letter}</span>
-      <div class="axis-track">
-        <div class="axis-fill" style="width:${r.letter === r.positive_letter? pct : 100 - pct}%; ${r.letter === r.positive_letter? '' : 'margin-left:auto;'}"></div>
-      </div>
-      <span class="axis-letter-right">${r.positive_letter}</span>
-    `;
+  row.innerHTML = `
+  <span class="axis-letter-left">${r.negative_letter} ${r.letter === r.negative_letter ? displayPct + '%' : ''}</span>
+  <div class="axis-track">
+    <div class="axis-fill" style="width:${r.letter === r.positive_letter ? pct : 100 - pct}%; ${r.letter === r.positive_letter ? '' : 'margin-left:auto;'}"></div>
+  </div>
+  <span class="axis-letter-right">${r.positive_letter} ${r.letter === r.positive_letter ? displayPct + '%' : ''}</span>
+`;
     axisBarsEl.appendChild(row);
   });
 
