@@ -1,8 +1,8 @@
-# MindPrint — ML Personality Quiz
+# Jerome's MindPrint — ML Personality Quiz
 
 A 32-question personality quiz that predicts a 4-letter MBTI type using logistic regression, not a simple points table.
 
-**Live site:** add your GitHub Pages link once deployed
+**Live site:** https://jeralied.github.io/Jerome-s-mindprint-quiz/
 
 ## The problem
 
@@ -10,7 +10,9 @@ Most online personality quizzes just add up agree/disagree answers. This one tre
 
 ## How it works
 
-Answer 32 questions on a 7-point scale. Four trained models (one per axis: E/I, S/N, T/F, J/P) each take your answers and output a probability and a predicted letter. The four letters combine into a type, and the result screen shows a spectrum bar per axis rather than a flat binary, since personality traits aren't really either/or.
+Answer 32 questions on a 7-point scale. Four trained models (one per axis: E/I, S/N, T/F, J/P) each take your answers and output a probability and a predicted letter. The four letters combine into a type, and the result screen shows a spectrum bar with a percentage per axis rather than a flat binary, since personality traits aren't really either/or.
+
+Once you get a result, you can download it as an image or share it straight to WhatsApp, X, or copy a link.
 
 ## A note on the framework and the data
 
@@ -24,6 +26,7 @@ The training data is also synthetic, not real survey responses. My coding enviro
 2. `train_model.py` — generates the synthetic dataset and trains one logistic regression model per axis with scikit-learn
 3. Weights get exported to `model_weights.json` / `weights.js`
 4. The frontend runs the model entirely in the browser, no backend, using the exported weights and a plain sigmoid calculation
+5. Result cards can be downloaded as a PNG (via html2canvas) or shared directly through the Web Share API, with fallback links for WhatsApp and X
 
 Training accuracy per axis on the synthetic data: EI 91.2%, SN 92.3%, TF 91.1%, JP 92.0%. Not 100%, since the data generation includes realistic noise on purpose.
 
@@ -31,6 +34,7 @@ Training accuracy per axis on the synthetic data: EI 91.2%, SN 92.3%, TF 91.1%, 
 
 - Python + scikit-learn for training
 - HTML/CSS/JS for the frontend, no framework, no backend
+- html2canvas for the downloadable result card
 - Hosted on GitHub Pages
 
 ## What I learned
@@ -39,6 +43,7 @@ Training accuracy per axis on the synthetic data: EI 91.2%, SN 92.3%, TF 91.1%, 
 - Generating synthetic training data and being honest about it
 - Exporting a trained model so it runs client-side with no server needed
 - Being upfront about a popular framework's real limitations instead of overselling it
+- Capturing part of a page as a downloadable image without a backend
 
 ## Feedback
 
@@ -53,4 +58,4 @@ Add real testing notes here once a few people have tried it.
 
 ## Author
 
-Built by Jerome (Ali), GCTU student, Ghana
+Built by Ali Jerome Edem Yao, GCTU student, Ghana
