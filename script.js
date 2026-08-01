@@ -1,9 +1,7 @@
-// ---- State ----
 let currentIndex = 0;
-const answers = {}; // question id -> value (-3..3)
-let lastTypeCode = ''; // NEW: store for download filename
+const answers = {};
+let lastTypeCode = '';
 
-// ---- MBTI Type Names - NEW ----
 const typeNames = {
     "ISTJ": "The Logistician", "ISFJ": "The Defender", "INFJ": "The Advocate", "INTJ": "The Architect",
     "ISTP": "The Virtuoso", "ISFP": "The Adventurer", "INFP": "The Mediator", "INTP": "The Thinker",
@@ -11,15 +9,13 @@ const typeNames = {
     "ESTJ": "The Executive", "ESFJ": "The Consul", "ENFJ": "The Protagonist", "ENTJ": "The Commander"
 };
 
-// ---- Elements ----
-const introScreen = document.getElementById('intro');
 const quizScreen = document.getElementById('quiz');
 const resultScreen = document.getElementById('result');
 
 const startBtn = document.getElementById('startBtn');
 const backBtn = document.getElementById('backBtn');
 const retakeBtn = document.getElementById('retakeBtn');
-const downloadBtn = document.getElementById('downloadBtn'); // NEW
+const downloadBtn = document.getElementById('downloadBtn');
 
 const qCounter = document.getElementById('qCounter');
 const qText = document.getElementById('qText');
@@ -28,13 +24,11 @@ const progressFill = document.getElementById('progressFill');
 
 const SCALE_VALUES = [-3, -2, -1, 0, 1, 2, 3];
 
-// ---- Screen switching ----
 function showScreen(el) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   el.classList.add('active');
 }
 
-// ---- Render a question ----
 function renderQuestion() {
   const q = QUESTIONS[currentIndex];
   qCounter.textContent = `Question ${currentIndex + 1} of ${QUESTIONS.length}`;
@@ -87,7 +81,6 @@ retakeBtn.addEventListener('click', () => {
   renderQuestion();
 });
 
-// ---- Scoring using the trained logistic regression weights ----
 function sigmoid(x) {
   return 1 / (1 + Math.exp(-x));
 }
@@ -96,11 +89,11 @@ function scoreAxis(axisKey) {
   const model = MODEL_WEIGHTS[axisKey];
   let z = model.intercept;
   model.question_ids.forEach((qid, i) => {
-    const val = answers[qid]?? 0;
+    const val = answers[qid] ?? 0;
     z += model.coefficients[i] * val;
   });
   const prob = sigmoid(z);
-  return { prob, letter: prob >= 0.5? model.positive_letter : model.negative_letter };
+  return { prob, letter: prob >= 0.5 ? model.positive_letter : model.negative_letter };
 }
 
 function showResults() {
@@ -113,7 +106,6 @@ function showResults() {
     typeCode += letter;
     const model = MODEL_WEIGHTS[axis];
     axisResults.push({
-      axis,
       letter,
       prob,
       positive_letter: model.positive_letter,
@@ -121,43 +113,43 @@ function showResults() {
     });
   });
 
-  lastTypeCode = typeCode; // NEW: save for download
+  lastTypeCode = typeCode;
 
-  // CHANGED THIS LINE - Now shows "INTJ - The Architect"
-  const typeName = typeNames[typeCode] || '';
-  document.getElementById('typeCode').textContent = `${typeCode} - ${typeName}`;
+  // typeNames is the single source of truth for the display name.
+  // TYPE_INFO (types.js) is used only for the longer description text.
+  const displayName = typeNames[typeCode] || (TYPE_INFO[typeCode] && TYPE_INFO[typeCode].name) || '';
+  const desc = (TYPE_INFO[typeCode] && TYPE_INFO[typeCode].desc) || '';
 
-  const info = TYPE_INFO[typeCode] || { name: '', desc: '' };
-  document.getElementById('typeName').textContent = info.name;
-  document.getElementById('typeDesc').textContent = info.desc;
+  document.getElementById('typeCode').textContent = typeCode;
+  document.getElementById('typeName').textContent = displayName;
+  document.getElementById('typeDesc').textContent = desc;
 
   const axisBarsEl = document.getElementById('axisBars');
   axisBarsEl.innerHTML = '';
   axisResults.forEach(r => {
     const pct = Math.round(r.prob * 100);
-    const displayPct = r.letter === r.positive_letter? pct : 100 - pct;
+    const fillPct = r.letter === r.positive_letter ? pct : 100 - pct;
+    const displayPct = r.letter === r.positive_letter ? pct : 100 - pct;
     const row = document.createElement('div');
     row.className = 'axis-row';
-    // #5 FEATURE: Added % labels
     row.innerHTML = `
-      <span class="axis-letter-left">${r.negative_letter} ${r.letter === r.negative_letter? displayPct + '%' : ''}</span>
+      <span class="axis-letter-left">${r.negative_letter} ${r.letter === r.negative_letter ? displayPct + '%' : ''}</span>
       <div class="axis-track">
-        <div class="axis-fill" style="width:${r.letter === r.positive_letter? pct : 100 - pct}%; ${r.letter === r.positive_letter? '' : 'margin-left:auto;'}"></div>
+        <div class="axis-fill" style="width:${fillPct}%; ${r.letter === r.positive_letter ? '' : 'margin-left:auto;'}"></div>
       </div>
-      <span class="axis-letter-right">${r.positive_letter} ${r.letter === r.positive_letter? displayPct + '%' : ''}</span>
+      <span class="axis-letter-right">${r.positive_letter} ${r.letter === r.positive_letter ? displayPct + '%' : ''}</span>
     `;
     axisBarsEl.appendChild(row);
   });
 
   showScreen(resultScreen);
-  setupShare(typeCode, info.name);
+  setupShare(typeCode, displayName);
 }
 
 const SITE_URL = window.location.href.split('?')[0].split('#')[0];
 
 function buildShareText(typeCode, typeName) {
-  const name = typeNames[typeCode] || '';
-  return `I got ${typeCode} - ${name} on Jerome's Mindprint Quiz!  Try it yourself:`;
+  return `I got ${typeCode} - ${typeName} on Jerome's Mindprint Quiz! Try it yourself:`;
 }
 
 function setupShare(typeCode, typeName) {
@@ -179,7 +171,9 @@ function setupShare(typeCode, typeName) {
       try {
         await navigator.share({ title: "Jerome's Mindprint Quiz", text, url: SITE_URL });
         return;
-      } catch (err) {}
+      } catch (err) {
+        // user cancelled, fall through to fallback links
+      }
     }
     shareFallback.classList.toggle('visible');
   };
@@ -195,13 +189,29 @@ function setupShare(typeCode, typeName) {
   };
 }
 
-// #6 FEATURE: Download Result as Image
+// Downloads only the result card (type + name + desc + bars), not the
+// buttons or disclaimers around it.
 downloadBtn.addEventListener('click', () => {
-  const resultCard = document.getElementById('result');
-  html2canvas(resultCard, { backgroundColor: '#0f0f1a', scale: 2 }).then(canvas => {
-    const link = document.createElement('a');
-    link.download = `Jerome-Mindprint-${lastTypeCode}.png`;
-    link.href = canvas.toDataURL('image/png');
-    link.click();
-  });
+  const card = document.getElementById('resultCard');
+  const watermark = card.querySelector('.card-watermark');
+
+  downloadBtn.disabled = true;
+  downloadBtn.textContent = 'Preparing...';
+  if (watermark) watermark.classList.add('visible');
+
+  html2canvas(card, { backgroundColor: '#201827', scale: 2 })
+    .then(canvas => {
+      const link = document.createElement('a');
+      link.download = `Jerome-Mindprint-${lastTypeCode}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    })
+    .catch(() => {
+      alert('Could not generate the image. Try again.');
+    })
+    .finally(() => {
+      if (watermark) watermark.classList.remove('visible');
+      downloadBtn.disabled = false;
+      downloadBtn.textContent = 'Download Result';
+    });
 });
