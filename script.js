@@ -162,11 +162,13 @@ function showResults() {
 
 const SITE_URL = window.location.href.split('?')[0].split('#')[0];
 
+// FIXED: Updated text
 function buildShareText(typeCode, typeName) {
-  const name = typeNames[typeCode] || ''; // UPDATED
-  return `I got ${typeCode} - ${name} on MindPrint, an ML-powered personality quiz. Try it yourself:`;
+  const name = typeNames[typeCode] || '';
+  return `I got ${typeCode} - ${name} on Jerome's Mindprint Quiz! 🧠✨ Try it yourself:`;
 }
 
+// FIXED: Fixed whatsapp link + added fullMessage to all
 function setupShare(typeCode, typeName) {
   const shareBtn = document.getElementById('shareBtn');
   const shareFallback = document.getElementById('shareFallback');
@@ -176,14 +178,15 @@ function setupShare(typeCode, typeName) {
   const copyConfirm = document.getElementById('copyConfirm');
 
   const text = buildShareText(typeCode, typeName);
+  const fullMessage = `${text} ${SITE_URL}`; // NEW
 
-  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(text + ' + SITE_URL)}`;
-  shareTwitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(SITE_URL)}`;
+  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(fullMessage)}`; // FIXED
+  shareTwitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullMessage)}`; // FIXED
 
   shareBtn.onclick = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: 'MindPrint', text, url: SITE_URL });
+        await navigator.share({ title: "Jerome's Mindprint Quiz", text, url: SITE_URL }); // FIXED title
         return;
       } catch (err) {}
     }
@@ -192,7 +195,7 @@ function setupShare(typeCode, typeName) {
 
   shareCopy.onclick = async () => {
     try {
-      await navigator.clipboard.writeText(`${text} ${SITE_URL}`);
+      await navigator.clipboard.writeText(fullMessage); // FIXED
       copyConfirm.textContent = 'Copied to clipboard';
       setTimeout(() => { copyConfirm.textContent = ''; }, 2000);
     } catch (err) {
