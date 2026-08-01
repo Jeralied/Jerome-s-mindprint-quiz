@@ -2,6 +2,26 @@
 let currentIndex = 0;
 const answers = {}; // question id -> value (-3..3)
 
+// ---- MBTI Type Names - NEW ----
+const typeNames = {
+    "ISTJ": "The Logistician",
+    "ISFJ": "The Defender",
+    "INFJ": "The Advocate",
+    "INTJ": "The Architect",
+    "ISTP": "The Virtuoso",
+    "ISFP": "The Adventurer",
+    "INFP": "The Mediator",
+    "INTP": "The Thinker",
+    "ESTP": "The Entrepreneur",
+    "ESFP": "The Entertainer",
+    "ENFP": "The Campaigner",
+    "ENTP": "The Debater",
+    "ESTJ": "The Executive",
+    "ESFJ": "The Consul",
+    "ENFJ": "The Protagonist",
+    "ENTJ": "The Commander"
+};
+
 // ---- Elements ----
 const introScreen = document.getElementById('intro');
 const quizScreen = document.getElementById('quiz');
@@ -46,7 +66,6 @@ function renderQuestion() {
 
 function selectAnswer(qid, val) {
   answers[qid] = val;
-  // small delay so the user sees the selection highlight before advancing
   renderQuestion();
   setTimeout(() => {
     if (currentIndex < QUESTIONS.length - 1) {
@@ -87,11 +106,11 @@ function scoreAxis(axisKey) {
   const model = MODEL_WEIGHTS[axisKey];
   let z = model.intercept;
   model.question_ids.forEach((qid, i) => {
-    const val = answers[qid] ?? 0;
+    const val = answers[qid]?? 0;
     z += model.coefficients[i] * val;
   });
-  const prob = sigmoid(z); // probability of the "positive_letter" class
-  return { prob, letter: prob >= 0.5 ? model.positive_letter : model.negative_letter };
+  const prob = sigmoid(z);
+  return { prob, letter: prob >= 0.5? model.positive_letter : model.negative_letter };
 }
 
 function showResults() {
@@ -112,7 +131,10 @@ function showResults() {
     });
   });
 
-  document.getElementById('typeCode').textContent = typeCode;
+  // CHANGED THIS LINE - Now shows "INTJ - The Architect"
+  const typeName = typeNames[typeCode] || '';
+  document.getElementById('typeCode').textContent = `${typeCode} - ${typeName}`;
+
   const info = TYPE_INFO[typeCode] || { name: '', desc: '' };
   document.getElementById('typeName').textContent = info.name;
   document.getElementById('typeDesc').textContent = info.desc;
@@ -121,13 +143,13 @@ function showResults() {
   axisBarsEl.innerHTML = '';
   axisResults.forEach(r => {
     const pct = Math.round(r.prob * 100);
-    const displayPct = r.letter === r.positive_letter ? pct : 100 - pct;
+    const displayPct = r.letter === r.positive_letter? pct : 100 - pct;
     const row = document.createElement('div');
     row.className = 'axis-row';
     row.innerHTML = `
       <span class="axis-letter-left">${r.negative_letter}</span>
       <div class="axis-track">
-        <div class="axis-fill" style="width:${r.letter === r.positive_letter ? pct : 100 - pct}%; ${r.letter === r.positive_letter ? '' : 'margin-left:auto;'}"></div>
+        <div class="axis-fill" style="width:${r.letter === r.positive_letter? pct : 100 - pct}%; ${r.letter === r.positive_letter? '' : 'margin-left:auto;'}"></div>
       </div>
       <span class="axis-letter-right">${r.positive_letter}</span>
     `;
@@ -141,7 +163,8 @@ function showResults() {
 const SITE_URL = window.location.href.split('?')[0].split('#')[0];
 
 function buildShareText(typeCode, typeName) {
-  return `I got ${typeCode} (${typeName}) on MindPrint, an ML-powered personality quiz. Try it yourself:`;
+  const name = typeNames[typeCode] || ''; // UPDATED
+  return `I got ${typeCode} - ${name} on MindPrint, an ML-powered personality quiz. Try it yourself:`;
 }
 
 function setupShare(typeCode, typeName) {
@@ -154,7 +177,7 @@ function setupShare(typeCode, typeName) {
 
   const text = buildShareText(typeCode, typeName);
 
-  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(text + ' ' + SITE_URL)}`;
+  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(text + ' + SITE_URL)}`;
   shareTwitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(SITE_URL)}`;
 
   shareBtn.onclick = async () => {
@@ -162,9 +185,7 @@ function setupShare(typeCode, typeName) {
       try {
         await navigator.share({ title: 'MindPrint', text, url: SITE_URL });
         return;
-      } catch (err) {
-        // user cancelled or share failed, fall through to showing fallback links
-      }
+      } catch (err) {}
     }
     shareFallback.classList.toggle('visible');
   };
