@@ -303,3 +303,41 @@ h1, h2 {
   margin-top: 10px;
   height: 1em;
 }
+
+.subtitle {
+  color: var(--ink-dim);
+  font-size: 0.9rem;
+  margin: -8px 0 18px;
+}
+
+#resultCard {
+  padding: 4px;
+}
+.card-watermark {
+  display: none;
+  font-size: 0.75rem;
+  color: var(--ink-dim);
+  letter-spacing: 0.06em;
+  margin-top: 18px;
+}
+.card-watermark.visible {
+  display: block;
+}
+
+.btn-secondary {
+  background: var(--bg-soft);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  font-family: 'Inter', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 11px 24px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  margin-bottom: 18px;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  border-color: var(--gold);
+  color: var(--gold);
+}
