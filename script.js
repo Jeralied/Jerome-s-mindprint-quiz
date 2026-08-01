@@ -115,8 +115,6 @@ function showResults() {
 
   lastTypeCode = typeCode;
 
-  // typeNames is the single source of truth for the display name.
-  // TYPE_INFO (types.js) is used only for the longer description text.
   const displayName = typeNames[typeCode] || (TYPE_INFO[typeCode] && TYPE_INFO[typeCode].name) || '';
   const desc = (TYPE_INFO[typeCode] && TYPE_INFO[typeCode].desc) || '';
 
@@ -129,15 +127,14 @@ function showResults() {
   axisResults.forEach(r => {
     const pct = Math.round(r.prob * 100);
     const fillPct = r.letter === r.positive_letter ? pct : 100 - pct;
-    const displayPct = r.letter === r.positive_letter ? pct : 100 - pct;
     const row = document.createElement('div');
     row.className = 'axis-row';
     row.innerHTML = `
-      <span class="axis-letter-left">${r.negative_letter} ${r.letter === r.negative_letter ? displayPct + '%' : ''}</span>
+      <span class="axis-letter-left">${r.negative_letter} ${r.letter === r.negative_letter ? fillPct + '%' : ''}</span>
       <div class="axis-track">
         <div class="axis-fill" style="width:${fillPct}%; ${r.letter === r.positive_letter ? '' : 'margin-left:auto;'}"></div>
       </div>
-      <span class="axis-letter-right">${r.positive_letter} ${r.letter === r.positive_letter ? displayPct + '%' : ''}</span>
+      <span class="axis-letter-right">${r.positive_letter} ${r.letter === r.positive_letter ? fillPct + '%' : ''}</span>
     `;
     axisBarsEl.appendChild(row);
   });
@@ -171,9 +168,7 @@ function setupShare(typeCode, typeName) {
       try {
         await navigator.share({ title: "Jerome's Mindprint Quiz", text, url: SITE_URL });
         return;
-      } catch (err) {
-        // user cancelled, fall through to fallback links
-      }
+      } catch (err) {}
     }
     shareFallback.classList.toggle('visible');
   };
@@ -189,8 +184,6 @@ function setupShare(typeCode, typeName) {
   };
 }
 
-// Downloads only the result card (type + name + desc + bars), not the
-// buttons or disclaimers around it.
 downloadBtn.addEventListener('click', () => {
   const card = document.getElementById('resultCard');
   const watermark = card.querySelector('.card-watermark');
