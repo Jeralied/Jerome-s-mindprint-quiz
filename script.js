@@ -1,25 +1,14 @@
 // ---- State ----
 let currentIndex = 0;
 const answers = {}; // question id -> value (-3..3)
+let lastTypeCode = ''; // NEW: store for download filename
 
 // ---- MBTI Type Names - NEW ----
 const typeNames = {
-    "ISTJ": "The Logistician",
-    "ISFJ": "The Defender",
-    "INFJ": "The Advocate",
-    "INTJ": "The Architect",
-    "ISTP": "The Virtuoso",
-    "ISFP": "The Adventurer",
-    "INFP": "The Mediator",
-    "INTP": "The Thinker",
-    "ESTP": "The Entrepreneur",
-    "ESFP": "The Entertainer",
-    "ENFP": "The Campaigner",
-    "ENTP": "The Debater",
-    "ESTJ": "The Executive",
-    "ESFJ": "The Consul",
-    "ENFJ": "The Protagonist",
-    "ENTJ": "The Commander"
+    "ISTJ": "The Logistician", "ISFJ": "The Defender", "INFJ": "The Advocate", "INTJ": "The Architect",
+    "ISTP": "The Virtuoso", "ISFP": "The Adventurer", "INFP": "The Mediator", "INTP": "The Thinker",
+    "ESTP": "The Entrepreneur", "ESFP": "The Entertainer", "ENFP": "The Campaigner", "ENTP": "The Debater",
+    "ESTJ": "The Executive", "ESFJ": "The Consul", "ENFJ": "The Protagonist", "ENTJ": "The Commander"
 };
 
 // ---- Elements ----
@@ -30,6 +19,7 @@ const resultScreen = document.getElementById('result');
 const startBtn = document.getElementById('startBtn');
 const backBtn = document.getElementById('backBtn');
 const retakeBtn = document.getElementById('retakeBtn');
+const downloadBtn = document.getElementById('downloadBtn'); // NEW
 
 const qCounter = document.getElementById('qCounter');
 const qText = document.getElementById('qText');
@@ -131,6 +121,8 @@ function showResults() {
     });
   });
 
+  lastTypeCode = typeCode; // NEW: save for download
+
   // CHANGED THIS LINE - Now shows "INTJ - The Architect"
   const typeName = typeNames[typeCode] || '';
   document.getElementById('typeCode').textContent = `${typeCode} - ${typeName}`;
@@ -146,13 +138,14 @@ function showResults() {
     const displayPct = r.letter === r.positive_letter? pct : 100 - pct;
     const row = document.createElement('div');
     row.className = 'axis-row';
-  row.innerHTML = `
-  <span class="axis-letter-left">${r.negative_letter} ${r.letter === r.negative_letter ? displayPct + '%' : ''}</span>
-  <div class="axis-track">
-    <div class="axis-fill" style="width:${r.letter === r.positive_letter ? pct : 100 - pct}%; ${r.letter === r.positive_letter ? '' : 'margin-left:auto;'}"></div>
-  </div>
-  <span class="axis-letter-right">${r.positive_letter} ${r.letter === r.positive_letter ? displayPct + '%' : ''}</span>
-`;
+    // #5 FEATURE: Added % labels
+    row.innerHTML = `
+      <span class="axis-letter-left">${r.negative_letter} ${r.letter === r.negative_letter? displayPct + '%' : ''}</span>
+      <div class="axis-track">
+        <div class="axis-fill" style="width:${r.letter === r.positive_letter? pct : 100 - pct}%; ${r.letter === r.positive_letter? '' : 'margin-left:auto;'}"></div>
+      </div>
+      <span class="axis-letter-right">${r.positive_letter} ${r.letter === r.positive_letter? displayPct + '%' : ''}</span>
+    `;
     axisBarsEl.appendChild(row);
   });
 
@@ -162,13 +155,11 @@ function showResults() {
 
 const SITE_URL = window.location.href.split('?')[0].split('#')[0];
 
-// FIXED: Updated text
 function buildShareText(typeCode, typeName) {
   const name = typeNames[typeCode] || '';
   return `I got ${typeCode} - ${name} on Jerome's Mindprint Quiz! 🧠✨ Try it yourself:`;
 }
 
-// FIXED: Fixed whatsapp link + added fullMessage to all
 function setupShare(typeCode, typeName) {
   const shareBtn = document.getElementById('shareBtn');
   const shareFallback = document.getElementById('shareFallback');
@@ -178,15 +169,15 @@ function setupShare(typeCode, typeName) {
   const copyConfirm = document.getElementById('copyConfirm');
 
   const text = buildShareText(typeCode, typeName);
-  const fullMessage = `${text} ${SITE_URL}`; // NEW
+  const fullMessage = `${text} ${SITE_URL}`;
 
-  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(fullMessage)}`; // FIXED
-  shareTwitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullMessage)}`; // FIXED
+  shareWhatsapp.href = `https://wa.me/?text=${encodeURIComponent(fullMessage)}`;
+  shareTwitter.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(fullMessage)}`;
 
   shareBtn.onclick = async () => {
     if (navigator.share) {
       try {
-        await navigator.share({ title: "Jerome's Mindprint Quiz", text, url: SITE_URL }); // FIXED title
+        await navigator.share({ title: "Jerome's Mindprint Quiz", text, url: SITE_URL });
         return;
       } catch (err) {}
     }
@@ -195,22 +186,22 @@ function setupShare(typeCode, typeName) {
 
   shareCopy.onclick = async () => {
     try {
-      await navigator.clipboard.writeText(fullMessage); // FIXED
+      await navigator.clipboard.writeText(fullMessage);
       copyConfirm.textContent = 'Copied to clipboard';
       setTimeout(() => { copyConfirm.textContent = ''; }, 2000);
     } catch (err) {
       copyConfirm.textContent = 'Could not copy — select and copy manually';
     }
-      const downloadBtn = document.getElementById('downloadBtn');
+  };
+}
 
+// #6 FEATURE: Download Result as Image
 downloadBtn.addEventListener('click', () => {
   const resultCard = document.getElementById('result');
-  html2canvas(resultCard, { backgroundColor: '#0f0f1a' }).then(canvas => {
+  html2canvas(resultCard, { backgroundColor: '#0f0f1a', scale: 2 }).then(canvas => {
     const link = document.createElement('a');
-    link.download = `Jerome-Mindprint-${typeCode}.png`;
-    link.href = canvas.toDataURL();
+    link.download = `Jerome-Mindprint-${lastTypeCode}.png`;
+    link.href = canvas.toDataURL('image/png');
     link.click();
   });
 });
-  };
-}
